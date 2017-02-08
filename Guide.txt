@@ -1,0 +1,8 @@
+Vores program adresse parser kan enten køres ved at anvende JAR filen eller køre main metoden 
+fra terminalen. Programmet læser user input og prøver at konvertere det til et standard adresse format vha. regular expressions. 
+JAR filen kan ikke lave autocomplete søgninger endnu, da vi ikke kan få tilføjet resource filen når den buildes fra IntelliJ.
+
+Respons kunne være brugbart ift. inlægning af txt fil i jar, samt måske forbedringer til autocomplete klassen og regularexpression tjekket i adresse klassen.
+Når programmet for eks skal løbe igennem 20000 forskellige addresser bliver det meget langsomt, på grund af de regulare ekspresions. 
+
+Lavet af Rasmus Raarup, Mads Pedersen, Jakob Roos og Hjalte Juhl
