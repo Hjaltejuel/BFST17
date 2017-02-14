@@ -1,71 +1,85 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.geom.Line2D;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class Model extends Observable implements Iterable<Address> {
-    private List<Address> addresses;
-    private List<Address> addressesUdskrift;
+/**
+ * Created by trold on 2/1/17.
+ */
+public class Model extends Observable implements Iterable<Line2D>, Serializable {
+	private List<Line2D> lines;
 
-    public Model() {
-        this.addresses = new ArrayList();
-        this.addressesUdskrift = new ArrayList();
-    }
+	public Model(String filename) {
+		lines = new ArrayList<>();
+		try (BufferedReader input = new BufferedReader(new FileReader(filename))) {
+			for (String line = input.readLine() ; line != null ; line = input.readLine()) {
+				String[] words = line.split(" ");
+				double x1 = Double.parseDouble(words[1]);
+				double y1 = Double.parseDouble(words[2]);
+				double x2 = Double.parseDouble(words[3]);
+				double y2 = Double.parseDouble(words[4]);
+				lines.add(new Line2D.Double(x1, y1, x2, y2));
+			}
+			dirty();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public Model(String filename) throws IOException {
-        BufferedReader input = new BufferedReader(new FileReader(new File(filename)));
-        Throwable var3 = null;
+	public Model() {
+		lines = new ArrayList<>();
+	}
 
-        try {
-            this.addresses = (List)input.lines().map(Address::parse).collect(Collectors.toList());
-            this.addressesUdskrift = new ArrayList();
-        } catch (Throwable var12) {
-            var3 = var12;
-            throw var12;
-        } finally {
-            if(input != null) {
-                if(var3 != null) {
-                    try {
-                        input.close();
-                    } catch (Throwable var11) {
-                        var3.addSuppressed(var11);
-                    }
-                } else {
-                    input.close();
-                }
-            }
+	public void add(Line2D line) {
+		lines.add(line);
+		dirty();
+	}
 
-        }
+	private void dirty() {
+		setChanged();
+		notifyObservers();
+	}
 
-    }
+	/**
+	 * Returns an iterator over elements of type {@code T}.
+	 *
+	 * @return an Iterator.
+	 */
+	@Override
+	public Iterator<Line2D> iterator() {
+		return lines.iterator();
+	}
 
-    public void add(Address address) {
-        this.addressesUdskrift.add(address);
-        this.addresses.add(address);
-        this.setChanged();
-        this.notifyObservers();
-    }
+	public Line2D removeLast() {
+		Line2D last = lines.remove(lines.size() - 1);
+		dirty();
+		return last;
+	}
 
-    public Iterator<Address> iterator() {
-        return this.addresses.iterator();
-    }
+	public void save(String filename) {
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
+			out.writeObject(lines);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    public List<Address> getAddresses() {
-        return this.addresses;
-    }
-
-    public List<Address> getAddressesUdskrift() {
-        return this.addressesUdskrift;
-    }
+	public void load(String filename) {
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
+			lines = (List<Line2D>) in.readObject();
+			dirty();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }

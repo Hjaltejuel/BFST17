@@ -1,29 +1,19 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
+import javax.swing.*;
 
-import java.io.IOException;
-import javax.swing.SwingUtilities;
-
+/**
+ * Created by trold on 2/1/17.
+ */
 public class Main {
-    public Main() {
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Model model;
-            if(args.length > 0) {
-                try {
-                    model = new Model(args[0]);
-                } catch (IOException var3) {
-                    throw new RuntimeException(var3);
-                }
-            } else {
-                model = new Model();
-            }
-
-            new View(model);
-        });
-    }
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			Model model;
+			if (args.length == 0) {
+				model = new Model();
+			} else {
+				model = new Model(args[0]);
+			}
+			DrawWindow drawWindow = new DrawWindow(model);
+			new DrawWindow(model);
+		});
+	}
 }
